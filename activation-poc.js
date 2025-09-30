@@ -6,7 +6,7 @@
 (function() {
     'use strict';
 
-    console.log('SuperSeymour v2.0.0 - Toggle functionality active');
+    console.log('SuperSeymour 2025.09.30.1626 - Toggle functionality active');
 
     // Check if already initialized
     if (window.SuperSeymour && window.SuperSeymour.active) {
