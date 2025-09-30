@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Reload SuperSeymour v2</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .success { background: #d4edda; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .error { background: #f8d7da; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .info { background: #d1ecf1; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .bookmarklet {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Force Reload SuperSeymour v2.0</h1>
+
+    <div class="info">
+        <strong>Issue:</strong> Your browser is caching the old version.<br>
+        <strong>Solution:</strong> We'll force-load directly from GitHub with a unique namespace.
+    </div>
+
+    <h2>Step 1: Clear Everything</h2>
+    <button onclick="clearAll()">Clear All SuperSeymour Traces</button>
+    <button onclick="removeOldElements()">Remove Old UI Elements</button>
+
+    <h2>Step 2: Force Load New Version</h2>
+    <button onclick="forceLoadV2()">🚀 Force Load v2.0</button>
+    <button onclick="testToggle()">Test Toggle Feature</button>
+
+    <h2>Step 3: New Bookmarklet (Guaranteed Fresh)</h2>
+    <p>This bookmarklet uses a completely different approach:</p>
+
+    <a href="javascript:(function(){
+        /* Nuclear option - clear EVERYTHING */
+        try{
+            delete window.SuperSeymour;
+            delete window.SSActive;
+            delete window.SSv2Active;
+            var oldElements = document.querySelectorAll('[id*=superseymour],[id*=ss-],.ss-orb-inner');
+            oldElements.forEach(function(el){el.remove()});
+        }catch(e){}
+
+        /* Create unique namespace */
+        window.SS2_TEMP = {};
+
+        /* Load with aggressive cache busting */
+        var loader = document.createElement('script');
+        var timestamp = Date.now();
+        var randomId = Math.random().toString(36).substr(2,9);
+
+        /* Try GitHub raw first (most up-to-date) */
+        loader.src = 'https://raw.githubusercontent.com/Founderstowne/SuperSeymour/main/activation-poc.js?cb=' + timestamp + '_' + randomId;
+
+        loader.onload = function(){
+            console.log('✅ SuperSeymour v2.0 loaded at', new Date().toISOString());
+
+            /* Verify it's v2 */
+            if(window.SuperSeymour && window.SuperSeymour.activeModes){
+                console.log('✅ Toggle functionality active!');
+
+                /* Force initialize */
+                if(typeof initializeSuperSeymour === 'function'){
+                    initializeSuperSeymour();
+                }
+            }else{
+                console.error('❌ Still loading old version');
+            }
+        };
+
+        loader.onerror = function(){
+            /* Fallback to CDN */
+            console.log('Trying CDN fallback...');
+            var cdnLoader = document.createElement('script');
+            cdnLoader.src = 'https://cdn.jsdelivr.net/gh/Founderstowne/SuperSeymour@latest/activation-poc.js?x=' + timestamp;
+            document.head.appendChild(cdnLoader);
+        };
+
+        /* Force reload by appending to head */
+        document.head.appendChild(loader);
+    })();" class="bookmarklet">🔄 SuperSeymour Nuclear Reload</a>
+
+    <h2>Console Output:</h2>
+    <pre id="output">Waiting for actions...</pre>
+
+    <h2>Test Area:</h2>
+    <div style="padding: 30px; background: #f8f9fa; border-radius: 8px;">
+        <article>
+            <h3>Test Article</h3>
+            <p>After loading v2.0, test the toggle functionality here:</p>
+            <ol>
+                <li>Click the blue orb (bottom-right)</li>
+                <li>Mini orbs appear</li>
+                <li>Click "🌙 Dark" - page inverts</li>
+                <li>Click "🌙 Dark" again - page reverts (TOGGLE!)</li>
+            </ol>
+        </article>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+
+        // Capture console
+        const originalLog = console.log;
+        const originalError = console.error;
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            output.textContent += '✅ ' + args.join(' ') + '\n';
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            output.textContent += '❌ ' + args.join(' ') + '\n';
+        };
+
+        function clearAll() {
+            // Nuclear clear
+            ['SuperSeymour', 'SSActive', 'SSv2Active', 'SS2_TEMP'].forEach(prop => {
+                if(window[prop]) {
+                    delete window[prop];
+                    console.log('Deleted window.' + prop);
+                }
+            });
+
+            // Clear all scripts with activation-poc
+            document.querySelectorAll('script[src*="activation-poc"]').forEach(s => {
+                s.remove();
+                console.log('Removed script:', s.src.substring(0, 50) + '...');
+            });
+        }
+
+        function removeOldElements() {
+            const elements = document.querySelectorAll('[id*="superseymour"], [id*="ss-"], .ss-orb-inner, .ss-radial-menu');
+            elements.forEach(el => {
+                el.remove();
+                console.log('Removed element:', el.id || el.className);
+            });
+        }
+
+        function forceLoadV2() {
+            clearAll();
+            removeOldElements();
+
+            const script = document.createElement('script');
+            const uniqueId = Date.now() + '_' + Math.random();
+
+            // Use raw GitHub (most direct)
+            script.src = `https://raw.githubusercontent.com/Founderstowne/SuperSeymour/main/activation-poc.js?force=${uniqueId}`;
+
+            script.onload = () => {
+                console.log('Script loaded from GitHub raw');
+
+                // Check what we got
+                if(window.SuperSeymour) {
+                    console.log('SuperSeymour object:', window.SuperSeymour);
+
+                    if(window.SuperSeymour.activeModes) {
+                        console.log('✅✅✅ VERSION 2.0 WITH TOGGLE IS LOADED! ✅✅✅');
+                        alert('SUCCESS! Toggle functionality is now available!');
+                    } else {
+                        console.error('Old version without activeModes');
+                        alert('Still cached. Try the Nuclear Reload bookmarklet above.');
+                    }
+                }
+            };
+
+            script.onerror = () => {
+                console.error('Failed to load from GitHub raw');
+            };
+
+            document.head.appendChild(script);
+        }
+
+        function testToggle() {
+            if(!window.SuperSeymour) {
+                alert('Load SuperSeymour first!');
+                return;
+            }
+
+            if(!window.SuperSeymour.activeModes) {
+                alert('Old version loaded. Toggle not available.');
+                return;
+            }
+
+            console.log('Active modes:', Array.from(window.SuperSeymour.activeModes));
+            alert('Toggle ready! Active modes: ' + Array.from(window.SuperSeymour.activeModes).join(', '));
+        }
+    </script>
+</body>
+</html>
