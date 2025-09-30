@@ -15,6 +15,8 @@
         active: false,
         currentMode: null,
         lastMode: 'reader',
+        activeModes: new Set(), // Track which modes are active
+        originalStyles: {}, // Store original styles for reverting
         settings: {
             position: 'bottom-right',
             theme: 'auto'
@@ -653,8 +655,42 @@
     // Apply reader mode (simplified)
     function applyReaderMode() {
         console.log('Applying reader mode...');
+        // Store original styles
+        if (!window.SuperSeymour.originalStyles.reader) {
+            window.SuperSeymour.originalStyles.reader = {
+                // Store any original values that reader mode will change
+                bodyWidth: document.body.style.width || '',
+                bodyFont: document.body.style.fontFamily || ''
+            };
+        }
+
         // This would extract article content and reformat it
-        window.SuperSeymour.currentMode = 'reader';
+        // For now, just apply some reading-friendly styles
+        const articles = document.querySelectorAll('article, [class*="article"], [class*="content"], main');
+        if (articles.length > 0) {
+            articles[0].style.maxWidth = '700px';
+            articles[0].style.margin = '0 auto';
+            articles[0].style.padding = '20px';
+            articles[0].style.fontFamily = 'Georgia, serif';
+            articles[0].style.fontSize = '18px';
+            articles[0].style.lineHeight = '1.8';
+            articles[0].classList.add('ss-reader-mode');
+        }
+    }
+
+    // Revert reader mode
+    function revertReaderMode() {
+        console.log('Reverting reader mode...');
+        const articles = document.querySelectorAll('.ss-reader-mode');
+        articles.forEach(article => {
+            article.style.maxWidth = '';
+            article.style.margin = '';
+            article.style.padding = '';
+            article.style.fontFamily = '';
+            article.style.fontSize = '';
+            article.style.lineHeight = '';
+            article.classList.remove('ss-reader-mode');
+        });
     }
 
     // Extract recipe (simplified)
@@ -781,47 +817,184 @@
         });
     }
 
-    // Handle menu item actions
+    // Handle menu item actions with toggle functionality
     function handleMenuAction(action) {
-        switch(action.toLowerCase()) {
+        const mode = action.toLowerCase();
+
+        // Check if mode is already active
+        if (window.SuperSeymour.activeModes.has(mode)) {
+            // Mode is active, so deactivate it
+            deactivateMode(mode);
+            window.SuperSeymour.activeModes.delete(mode);
+            showNotification(`${getIconForMode(mode)} ${action} mode deactivated`);
+        } else {
+            // Mode is not active, so activate it
+            switch(mode) {
+                case 'reader':
+                    applyReaderMode();
+                    break;
+                case 'dark':
+                    applyDarkMode();
+                    break;
+                case 'speed':
+                    applySpeedMode();
+                    break;
+                case 'zen':
+                    applyZenMode();
+                    break;
+                default:
+                    console.log('Action:', action);
+                    return;
+            }
+            window.SuperSeymour.activeModes.add(mode);
+            showNotification(`${getIconForMode(mode)} ${action} mode activated`);
+        }
+
+        // Update visual indicators on menu items
+        updateMenuItemStates();
+    }
+
+    // Get icon for mode
+    function getIconForMode(mode) {
+        const icons = {
+            'reader': '📖',
+            'dark': '🌙',
+            'speed': '⚡',
+            'zen': '🧘'
+        };
+        return icons[mode] || '✨';
+    }
+
+    // Deactivate a specific mode
+    function deactivateMode(mode) {
+        switch(mode) {
             case 'reader':
-                applyReaderMode();
+                revertReaderMode();
                 break;
             case 'dark':
-                applyDarkMode();
+                revertDarkMode();
                 break;
             case 'speed':
-                applySpeedMode();
+                revertSpeedMode();
                 break;
             case 'zen':
-                applyZenMode();
+                revertZenMode();
                 break;
-            default:
-                console.log('Action:', action);
         }
+    }
+
+    // Update visual state of menu items
+    function updateMenuItemStates() {
+        const menu = document.querySelector('.ss-radial-menu');
+        if (!menu) return;
+
+        menu.querySelectorAll('.ss-menu-item').forEach(item => {
+            const label = item.dataset.label.toLowerCase();
+            if (window.SuperSeymour.activeModes.has(label)) {
+                item.classList.add('active');
+                item.style.background = 'linear-gradient(135deg, #0066cc, #0099ff)';
+                item.style.color = 'white';
+            } else {
+                item.classList.remove('active');
+                item.style.background = 'rgba(255, 255, 255, 0.95)';
+                item.style.color = '';
+            }
+        });
     }
 
     // Apply dark mode
     function applyDarkMode() {
+        // Store original filter
+        if (!window.SuperSeymour.originalStyles.filter) {
+            window.SuperSeymour.originalStyles.filter = document.documentElement.style.filter || '';
+        }
         document.documentElement.style.filter = 'invert(1) hue-rotate(180deg)';
-        window.SuperSeymour.currentMode = 'dark';
+
+        // Also invert images and videos to revert them back
+        const media = document.querySelectorAll('img, video, iframe, embed, object');
+        media.forEach(el => {
+            el.style.filter = 'invert(1) hue-rotate(180deg)';
+            el.classList.add('ss-dark-mode-media');
+        });
+    }
+
+    // Revert dark mode
+    function revertDarkMode() {
+        document.documentElement.style.filter = window.SuperSeymour.originalStyles.filter || '';
+
+        // Revert media elements
+        const media = document.querySelectorAll('.ss-dark-mode-media');
+        media.forEach(el => {
+            el.style.filter = '';
+            el.classList.remove('ss-dark-mode-media');
+        });
     }
 
     // Apply speed mode
     function applySpeedMode() {
+        // Track hidden elements so we can restore them
+        window.SuperSeymour.hiddenBySpeed = [];
+
         // Remove ads, trackers, etc.
-        const annoyances = document.querySelectorAll('[class*="ad"], [id*="ad"], [class*="popup"], [class*="modal"], [class*="banner"]');
-        annoyances.forEach(el => el.style.display = 'none');
-        window.SuperSeymour.currentMode = 'speed';
+        const annoyances = document.querySelectorAll('[class*="ad"], [id*="ad"], [class*="popup"], [class*="modal"], [class*="banner"], [class*="newsletter"], [class*="subscribe"]');
+        annoyances.forEach(el => {
+            if (el.style.display !== 'none') {
+                window.SuperSeymour.hiddenBySpeed.push({
+                    element: el,
+                    originalDisplay: el.style.display || ''
+                });
+                el.style.display = 'none';
+            }
+        });
+    }
+
+    // Revert speed mode
+    function revertSpeedMode() {
+        if (window.SuperSeymour.hiddenBySpeed) {
+            window.SuperSeymour.hiddenBySpeed.forEach(item => {
+                item.element.style.display = item.originalDisplay;
+            });
+            window.SuperSeymour.hiddenBySpeed = [];
+        }
     }
 
     // Apply zen mode
     function applyZenMode() {
+        // Store original styles
+        if (!window.SuperSeymour.originalStyles.zen) {
+            window.SuperSeymour.originalStyles.zen = {
+                maxWidth: document.body.style.maxWidth || '',
+                margin: document.body.style.margin || '',
+                padding: document.body.style.padding || '',
+                background: document.body.style.background || ''
+            };
+        }
+
         // Simplified, minimal view
         document.body.style.maxWidth = '800px';
         document.body.style.margin = '0 auto';
         document.body.style.padding = '40px';
-        window.SuperSeymour.currentMode = 'zen';
+        document.body.style.background = 'white';
+
+        // Also simplify font
+        document.body.style.fontFamily = 'Georgia, serif';
+        document.body.style.fontSize = '18px';
+        document.body.style.lineHeight = '1.6';
+    }
+
+    // Revert zen mode
+    function revertZenMode() {
+        if (window.SuperSeymour.originalStyles.zen) {
+            document.body.style.maxWidth = window.SuperSeymour.originalStyles.zen.maxWidth;
+            document.body.style.margin = window.SuperSeymour.originalStyles.zen.margin;
+            document.body.style.padding = window.SuperSeymour.originalStyles.zen.padding;
+            document.body.style.background = window.SuperSeymour.originalStyles.zen.background;
+
+            // Reset font styles
+            document.body.style.fontFamily = '';
+            document.body.style.fontSize = '';
+            document.body.style.lineHeight = '';
+        }
     }
 
     // Toggle last mode
@@ -931,18 +1104,17 @@
         menu.innerHTML = menuHTML;
         orb.appendChild(menu);
 
+        // Update visual state of items based on active modes
+        updateMenuItemStates();
+
         // Add click handlers to menu items
         menu.querySelectorAll('.ss-menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 e.stopPropagation(); // Prevent event from bubbling to orb
                 const label = item.dataset.label;
-                const icon = item.dataset.icon;
 
-                // Handle the menu item action
+                // Handle the menu item action (includes notification)
                 handleMenuAction(label);
-
-                // Show notification
-                showNotification(`${icon} ${label} mode activated`);
 
                 // Don't close the menu here - let user close it by clicking orb
             });
