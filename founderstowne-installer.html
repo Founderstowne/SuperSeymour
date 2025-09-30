@@ -209,8 +209,8 @@
         <div class="bookmarklet-container">
             <p style="margin-bottom: 20px; font-size: 1.1em;">Drag this to your bookmarks bar:</p>
 
-            <!-- GitHub Pages Hosted Version -->
-            <a href="javascript:(function(){if(window.SSActive)return;window.SSActive=1;var servers=['https://founderstowne.github.io/SuperSeymour/activation-poc.js','https://cdn.jsdelivr.net/gh/Founderstowne/SuperSeymour@main/activation-poc.js','https://raw.githubusercontent.com/Founderstowne/SuperSeymour/main/activation-poc.js'],tryServer=function(i){if(i>=servers.length){alert('SuperSeymour: Unable to load. Please try again later.');window.SSActive=0;return;}var s=document.createElement('script');s.src=servers[i]+'?v='+Date.now();s.onerror=()=>tryServer(i+1);s.onload=()=>console.log('SuperSeymour loaded from:',servers[i]);document.head.appendChild(s);};tryServer(0);})();"
+            <!-- CDN First (GitHub Pages not enabled yet) -->
+            <a href="javascript:(function(){if(window.SSActive)return;window.SSActive=1;var servers=['https://cdn.jsdelivr.net/gh/Founderstowne/SuperSeymour@main/activation-poc.js','https://raw.githubusercontent.com/Founderstowne/SuperSeymour/main/activation-poc.js','https://founderstowne.github.io/SuperSeymour/activation-poc.js'],tryServer=function(i){if(i>=servers.length){alert('SuperSeymour: Unable to load. Please try again later.');window.SSActive=0;return;}var s=document.createElement('script');s.src=servers[i]+'?v2='+Date.now();s.onerror=()=>tryServer(i+1);s.onload=()=>console.log('SuperSeymour v2.0.0 loaded from:',servers[i]);document.head.appendChild(s);};tryServer(0);})();"
                class="bookmarklet-link">🌈 SuperSeymour</a>
         </div>
 
