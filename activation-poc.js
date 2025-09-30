@@ -1,8 +1,12 @@
 // SuperSeymour Activation Sequence - Proof of Concept
+// Version: 2.0.0 - Toggle functionality added
+// Last updated: 2025-09-30 12:45 PM
 // This shows what happens when the bookmarklet is clicked
 
 (function() {
     'use strict';
+
+    console.log('SuperSeymour v2.0.0 - Toggle functionality active');
 
     // Check if already initialized
     if (window.SuperSeymour && window.SuperSeymour.active) {
