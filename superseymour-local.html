@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperSeymour - Local Installation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .bookmarklet-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .bookmarklet {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #0066cc, #0099ff);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: move;
+        }
+
+        .bookmarklet:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,102,204,0.4);
+        }
+
+        .bookmarklet:active {
+            transform: translateY(0);
+        }
+
+        .instructions {
+            background: #e8f4fd;
+            border-left: 4px solid #0066cc;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .instructions h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+        }
+
+        .features {
+            margin: 30px 0;
+        }
+
+        .features h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .feature {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            background: #d4edda;
+            border-radius: 8px;
+            color: #155724;
+            display: none;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .code-preview {
+            margin-top: 30px;
+            padding: 20px;
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            display: none;
+        }
+
+        .toggle-code {
+            background: none;
+            border: 1px solid #0066cc;
+            color: #0066cc;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .toggle-code:hover {
+            background: #0066cc;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ SuperSeymour</h1>
+        <p class="subtitle">The OS that lives in your bookmark bar - 100% local, 100% private</p>
+
+        <div class="bookmarklet-container">
+            <a href="#" id="bookmarklet" class="bookmarklet">⚡ SuperSeymour</a>
+            <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
+                Drag this button to your bookmarks bar
+            </p>
+        </div>
+
+        <div class="instructions">
+            <h3>📚 How to Install</h3>
+            <ol>
+                <li><strong>Show your bookmarks bar</strong> (Ctrl+Shift+B or Cmd+Shift+B)</li>
+                <li><strong>Drag</strong> the blue button above to your bookmarks bar</li>
+                <li><strong>Click</strong> the bookmark on any website to activate SuperSeymour</li>
+                <li><strong>Enjoy</strong> enhanced browsing with complete privacy</li>
+            </ol>
+        </div>
+
+        <div class="features">
+            <h3>✨ Features</h3>
+            <div class="feature-list">
+                <div class="feature">
+                    <span class="feature-icon">🌙</span>
+                    <span>Dark Mode</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">📖</span>
+                    <span>Reader Mode</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">⚡</span>
+                    <span>Speed Mode</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🧘</span>
+                    <span>Zen Mode</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🔒</span>
+                    <span>Privacy Shield</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🎨</span>
+                    <span>Custom Themes</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <button class="toggle-code" onclick="toggleCode()">View Bookmarklet Code</button>
+        <pre class="code-preview" id="codePreview"></pre>
+    </div>
+
+    <script>
+        // The complete SuperSeymour bookmarklet - fully self-contained
+        const bookmarkletCode = `javascript:(function(){
+    /* SuperSeymour v2025.09.30 - 100% Local */
+
+    if(window.SuperSeymour && window.SuperSeymour.active){
+        window.SuperSeymour.toggle();
+        return;
+    }
+
+    /* All functionality embedded - no external fetches */
+    window.SuperSeymour = {
+        active: false,
+        version: '2025.09.30',
+
+        init: function() {
+            /* Create styles */
+            const style = document.createElement('style');
+            style.id = 'ss-styles';
+            style.textContent = \`
+                #ss-orb {
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    width: 60px;
+                    height: 60px;
+                    background: linear-gradient(135deg, #0066cc, #0099ff);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 28px;
+                    color: white;
+                    cursor: pointer;
+                    z-index: 2147483647;
+                    box-shadow: 0 4px 20px rgba(0,102,204,0.4);
+                    transition: all 0.3s ease;
+                    animation: ss-entrance 0.5s cubic-bezier(0.68,-0.55,0.265,1.55);
+                    user-select: none;
+                }
+
+                #ss-orb:hover {
+                    transform: scale(1.1);
+                    box-shadow: 0 6px 30px rgba(0,102,204,0.6);
+                }
+
+                #ss-menu {
+                    position: fixed;
+                    bottom: 100px;
+                    right: 30px;
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                    padding: 10px;
+                    z-index: 2147483646;
+                    opacity: 0;
+                    transform: scale(0.8) translateY(20px);
+                    pointer-events: none;
+                    transition: all 0.3s ease;
+                    min-width: 200px;
+                }
+
+                #ss-menu.show {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                    pointer-events: auto;
+                }
+
+                .ss-menu-item {
+                    padding: 12px 16px;
+                    cursor: pointer;
+                    border-radius: 8px;
+                    transition: background 0.2s;
+                    display: flex;
+                    align-items: center;
+                    font-family: -apple-system, sans-serif;
+                    font-size: 14px;
+                    color: #333;
+                }
+
+                .ss-menu-item:hover {
+                    background: #f0f0f0;
+                }
+
+                .ss-menu-icon {
+                    margin-right: 10px;
+                    font-size: 18px;
+                }
+
+                .ss-notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #0066cc, #0099ff);
+                    color: white;
+                    padding: 14px 20px;
+                    border-radius: 8px;
+                    z-index: 2147483647;
+                    animation: ss-slide-in 0.5s ease;
+                    font-family: -apple-system, sans-serif;
+                    box-shadow: 0 4px 20px rgba(0,102,204,0.3);
+                }
+
+                @keyframes ss-entrance {
+                    0% {
+                        opacity: 0;
+                        transform: scale(0) rotate(-180deg);
+                    }
+                    100% {
+                        opacity: 1;
+                        transform: scale(1) rotate(0);
+                    }
+                }
+
+                @keyframes ss-slide-in {
+                    0% {
+                        opacity: 0;
+                        transform: translateX(100px);
+                    }
+                    100% {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+
+                /* Dark mode styles */
+                .ss-dark-mode {
+                    filter: invert(1) hue-rotate(180deg);
+                    background: #1a1a1a !important;
+                }
+
+                .ss-dark-mode img,
+                .ss-dark-mode video,
+                .ss-dark-mode iframe {
+                    filter: invert(1) hue-rotate(180deg);
+                }
+
+                /* Reader mode styles */
+                .ss-reader-mode {
+                    max-width: 700px !important;
+                    margin: 0 auto !important;
+                    padding: 40px 20px !important;
+                    font-family: Georgia, serif !important;
+                    font-size: 18px !important;
+                    line-height: 1.8 !important;
+                    color: #333 !important;
+                    background: #fafafa !important;
+                }
+
+                .ss-reader-mode * {
+                    max-width: 100% !important;
+                }
+
+                /* Speed mode - hide common annoyances */
+                .ss-speed-mode .ad,
+                .ss-speed-mode [class*="cookie"],
+                .ss-speed-mode [class*="banner"],
+                .ss-speed-mode [class*="popup"],
+                .ss-speed-mode [class*="modal"],
+                .ss-speed-mode [id*="cookie"],
+                .ss-speed-mode [id*="banner"],
+                .ss-speed-mode [id*="popup"],
+                .ss-speed-mode [id*="modal"],
+                .ss-speed-mode [class*="newsletter"],
+                .ss-speed-mode [class*="subscribe"] {
+                    display: none !important;
+                }
+            \`;
+            document.head.appendChild(style);
+
+            /* Create orb */
+            const orb = document.createElement('div');
+            orb.id = 'ss-orb';
+            orb.innerHTML = '⚡';
+            document.body.appendChild(orb);
+
+            /* Create menu */
+            const menu = document.createElement('div');
+            menu.id = 'ss-menu';
+            menu.innerHTML = \`
+                <div class="ss-menu-item" data-mode="dark">
+                    <span class="ss-menu-icon">🌙</span>
+                    <span>Dark Mode</span>
+                </div>
+                <div class="ss-menu-item" data-mode="reader">
+                    <span class="ss-menu-icon">📖</span>
+                    <span>Reader Mode</span>
+                </div>
+                <div class="ss-menu-item" data-mode="speed">
+                    <span class="ss-menu-icon">⚡</span>
+                    <span>Speed Mode</span>
+                </div>
+                <div class="ss-menu-item" data-mode="zen">
+                    <span class="ss-menu-icon">🧘</span>
+                    <span>Zen Mode</span>
+                </div>
+                <div class="ss-menu-item" data-mode="reset">
+                    <span class="ss-menu-icon">🔄</span>
+                    <span>Reset Page</span>
+                </div>
+            \`;
+            document.body.appendChild(menu);
+
+            /* Show notification */
+            this.notify('SuperSeymour Ready! Click orb for features.');
+
+            /* Add click handlers */
+            orb.onclick = () => {
+                menu.classList.toggle('show');
+            };
+
+            /* Menu item handlers */
+            menu.querySelectorAll('.ss-menu-item').forEach(item => {
+                item.onclick = () => {
+                    const mode = item.dataset.mode;
+                    this.applyMode(mode);
+                    menu.classList.remove('show');
+                };
+            });
+
+            /* Close menu on outside click */
+            document.addEventListener('click', (e) => {
+                if (!orb.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.remove('show');
+                }
+            });
+
+            this.active = true;
+        },
+
+        applyMode: function(mode) {
+            const html = document.documentElement;
+
+            /* Clear previous modes */
+            html.classList.remove('ss-dark-mode', 'ss-reader-mode', 'ss-speed-mode');
+
+            switch(mode) {
+                case 'dark':
+                    html.classList.add('ss-dark-mode');
+                    this.notify('🌙 Dark Mode Activated');
+                    break;
+
+                case 'reader':
+                    /* Extract main content */
+                    const article = document.querySelector('article, main, [role="main"], .content, #content');
+                    if (article) {
+                        document.body.innerHTML = '';
+                        document.body.appendChild(article.cloneNode(true));
+                        document.body.classList.add('ss-reader-mode');
+                        this.notify('📖 Reader Mode Activated');
+                    } else {
+                        this.notify('⚠️ No article content found');
+                    }
+                    break;
+
+                case 'speed':
+                    html.classList.add('ss-speed-mode');
+                    /* Remove tracking scripts */
+                    document.querySelectorAll('script[src*="google"], script[src*="facebook"], script[src*="analytics"]').forEach(s => s.remove());
+                    this.notify('⚡ Speed Mode Activated - Ads & trackers removed');
+                    break;
+
+                case 'zen':
+                    /* Simplify page to just text */
+                    document.querySelectorAll('img, video, iframe, aside, nav, header, footer').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    document.body.style.padding = '40px';
+                    document.body.style.maxWidth = '800px';
+                    document.body.style.margin = '0 auto';
+                    this.notify('🧘 Zen Mode - Pure focus');
+                    break;
+
+                case 'reset':
+                    location.reload();
+                    break;
+            }
+        },
+
+        notify: function(message) {
+            const notification = document.createElement('div');
+            notification.className = 'ss-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        },
+
+        toggle: function() {
+            const orb = document.getElementById('ss-orb');
+            const menu = document.getElementById('ss-menu');
+            const styles = document.getElementById('ss-styles');
+
+            if (orb) {
+                orb.remove();
+                menu.remove();
+                styles.remove();
+                this.active = false;
+
+                /* Clear any applied modes */
+                document.documentElement.classList.remove('ss-dark-mode', 'ss-reader-mode', 'ss-speed-mode');
+            } else {
+                this.init();
+            }
+        }
+    };
+
+    /* Initialize immediately */
+    window.SuperSeymour.init();
+
+})();`;
+
+        // Set up the bookmarklet
+        document.getElementById('bookmarklet').href = bookmarkletCode;
+
+        // Show code preview
+        function toggleCode() {
+            const preview = document.getElementById('codePreview');
+            preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
+            preview.textContent = bookmarkletCode.replace('javascript:', '');
+        }
+
+        // Check for IndexedDB support
+        if ('indexedDB' in window) {
+            console.log('✅ IndexedDB supported - SuperSeymour can cache locally');
+        } else {
+            const status = document.getElementById('status');
+            status.className = 'status error';
+            status.style.display = 'block';
+            status.innerHTML = '⚠️ Your browser doesn\'t support IndexedDB. SuperSeymour will still work but won\'t cache data.';
+        }
+    </script>
+</body>
+</html>

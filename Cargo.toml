@@ -1,0 +1,11 @@
+[package]
+name = "superseymour-bookmarklet"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Zero dependencies - we'll use only std library!
+
+[[bin]]
+name = "generate-bookmarklet"
+path = "src/main.rs"

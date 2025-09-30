@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperSeymour - The OS That Lives in Your Bookmark Bar</title>
+    <meta name="description" content="Transform any website with one click. No downloads, no installations, no tracking. Just pure magic.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #0052a3;
+            --success: #00c853;
+            --warning: #ff6f00;
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --text-light: #666;
+            --border: #e0e0e0;
+            --card-bg: #f8f9fa;
+            --glow: rgba(0, 102, 204, 0.3);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a0a0a;
+                --text: #e0e0e0;
+                --text-light: #999;
+                --border: #2a2a2a;
+                --card-bg: #1a1a1a;
+                --glow: rgba(0, 102, 204, 0.5);
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), #00c853);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        /* Bookmarklet Button */
+        .bookmarklet-container {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 2px solid var(--border);
+        }
+
+        .bookmarklet-btn {
+            display: inline-block;
+            padding: 1.25rem 3rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
+            cursor: move;
+            user-select: none;
+        }
+
+        .bookmarklet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.4);
+        }
+
+        .bookmarklet-btn:active {
+            transform: translateY(0);
+        }
+
+        .drag-hint {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Storage Check Section */
+        .storage-check {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 2px solid var(--border);
+        }
+
+        .storage-display {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .storage-bar {
+            height: 30px;
+            background: var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .storage-used {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .install-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .install-btn {
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .install-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+        }
+
+        .install-btn h4 {
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .install-btn .size {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text);
+            margin: 0.5rem 0;
+        }
+
+        .install-btn ul {
+            text-align: left;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            list-style: none;
+            padding: 0;
+        }
+
+        .install-btn ul li::before {
+            content: "✓ ";
+            color: var(--success);
+        }
+
+        /* Feature Sections */
+        .features-section {
+            margin: 3rem 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        .status-working {
+            background: rgba(0, 200, 83, 0.1);
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+
+        .status-building {
+            background: rgba(255, 111, 0, 0.1);
+            color: var(--warning);
+            border: 2px solid var(--warning);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            padding: 1.5rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .coming-soon {
+            opacity: 0.7;
+            position: relative;
+        }
+
+        .coming-soon::after {
+            content: "Coming Soon";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0.2rem 0.5rem;
+            background: var(--warning);
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .hero {
+                padding: 2rem 0;
+            }
+
+            .install-options {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>SuperSeymour</h1>
+            <p>The OS that lives in your bookmark bar</p>
+            <p style="font-size: 1rem;">Transform any website with one click. No downloads. No tracking. Just magic.</p>
+        </div>
+
+        <!-- Bookmarklet -->
+        <div class="bookmarklet-container">
+            <div style="text-align: center;">
+                <a href="javascript:(function(){if(window.SuperSeymour&&window.SuperSeymour.active){window.SuperSeymour.toggle();return}const loadFromCache=async()=>{try{const db=await new Promise((resolve,reject)=>{const request=indexedDB.open('SuperSeymourDB',1);request.onerror=()=>reject(request.error);request.onsuccess=()=>resolve(request.result);request.onupgradeneeded=(e)=>{const db=e.target.result;if(!db.objectStoreNames.contains('code')){db.createObjectStore('code')}}});const tx=db.transaction(['code'],'readonly');const store=tx.objectStore('code');const code=await new Promise((resolve)=>{const request=store.get('main');request.onsuccess=()=>resolve(request.result)});db.close();return code}catch(e){console.log('Cache miss:',e);return null}};const saveToCache=async(code)=>{try{const db=await new Promise((resolve,reject)=>{const request=indexedDB.open('SuperSeymourDB',1);request.onerror=()=>reject(request.error);request.onsuccess=()=>resolve(request.result);request.onupgradeneeded=(e)=>{const db=e.target.result;if(!db.objectStoreNames.contains('code')){db.createObjectStore('code')}}});const tx=db.transaction(['code'],'readwrite');const store=tx.objectStore('code');store.put(code,'main');await tx.complete;db.close()}catch(e){console.log('Cache save failed:',e)}};const init=async()=>{let code=await loadFromCache();if(!code){const consent=confirm('Welcome to SuperSeymour!✨\n\nThis will enhance any website with:\n• Dark mode\n• Reader mode\n• Ad blocking\n• And more!\n\nEverything runs locally in your browser.\nNo data is sent anywhere.\n\nInstall SuperSeymour?');if(!consent)return;code=`(function(){if(window.SuperSeymour&&window.SuperSeymour.active){window.SuperSeymour.toggle();return}window.SuperSeymour={active:true,toggle:function(){const orb=document.querySelector('#superseymour-orb');if(orb){orb.remove();this.active=false}else{this.init()}},init:function(){const orb=document.createElement('div');orb.id='superseymour-orb';orb.innerHTML='⚡';orb.style.cssText='position:fixed;bottom:30px;right:30px;width:60px;height:60px;background:linear-gradient(135deg,#0066cc,#0099ff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;z-index:2147483647;box-shadow:0 4px 20px rgba(0,102,204,0.4);transition:all 0.3s ease;';orb.onclick=()=>{alert('SuperSeymour Menu\\n\\n📖 Reader Mode\\n🌙 Dark Mode\\n⚡ Speed Mode\\n🧘 Zen Mode\\n\\n(Full version coming soon!)')};document.body.appendChild(orb);const notify=document.createElement('div');notify.innerHTML='SuperSeymour Ready - Click orb for menu';notify.style.cssText='position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#0066cc,#0099ff);color:white;padding:12px 20px;border-radius:8px;z-index:2147483647;animation:slideIn 0.5s ease;';document.body.appendChild(notify);setTimeout(()=>notify.remove(),3000);this.active=true}};window.SuperSeymour.init()})()`;await saveToCache(code)}try{eval(code)}catch(e){console.error('SuperSeymour error:',e)}};init()})();"
+                   class="bookmarklet-btn"
+                   onclick="event.preventDefault(); alert('Drag me to your bookmarks bar!');">
+                    ⚡ SuperSeymour
+                </a>
+                <p class="drag-hint">
+                    <strong>Drag this button to your bookmarks bar</strong><br>
+                    Then click it on any website to activate the magic
+                </p>
+            </div>
+        </div>
+
+        <!-- Storage Check -->
+        <div class="storage-check">
+            <h3 style="margin-bottom: 1rem;">Your Browser Storage</h3>
+            <div class="storage-display" id="storageInfo">
+                <div class="loading"></div> Checking available storage...
+            </div>
+            <div class="storage-bar" id="storageBar" style="display: none;">
+                <div class="storage-used" id="storageUsed"></div>
+            </div>
+
+            <div class="install-options" id="installOptions" style="display: none;">
+                <div class="install-btn" onclick="installMinimal()">
+                    <h4>Minimal</h4>
+                    <div class="size">5MB</div>
+                    <ul>
+                        <li>Core features</li>
+                        <li>Dark & Reader mode</li>
+                        <li>Ad blocking</li>
+                    </ul>
+                </div>
+
+                <div class="install-btn" onclick="installStandard()">
+                    <h4>Standard</h4>
+                    <div class="size">12MB</div>
+                    <ul>
+                        <li>Everything in Minimal</li>
+                        <li>Blue light filter</li>
+                        <li>Focus mode</li>
+                    </ul>
+                </div>
+
+                <div class="install-btn" onclick="installComplete()">
+                    <h4>Complete</h4>
+                    <div class="size">20MB</div>
+                    <ul>
+                        <li>Everything in Standard</li>
+                        <li>Local AI features</li>
+                        <li>P2P networking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Working Right Now -->
+        <div class="features-section">
+            <div class="section-header">
+                <h2>Working Right Now</h2>
+                <span class="status-badge status-working">LIVE</span>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🎯 One-Click Magic</h3>
+                    <p>No installation, no permissions. Click the bookmarklet and watch any site transform instantly.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🌙 True Dark Mode</h3>
+                    <p>Real OLED black on every website. Not the half-assed gray most sites call "dark mode".</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📖 Reader Mode</h3>
+                    <p>Strip away all distractions. Beautiful typography, perfect line length, estimated read time.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>⚡ Speed Mode</h3>
+                    <p>Remove all trackers, ads, popups, and bloat. Pages load 3x faster.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🍪 No Cookie Banners</h3>
+                    <p>They just disappear. Forever. You're welcome.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🥘 Recipe Extractor</h3>
+                    <p>Skip the life story. Get just the ingredients and instructions.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔗 Clean URLs</h3>
+                    <p>Copy links without tracking parameters. Share clean, readable URLs.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🛡️ Privacy Shield</h3>
+                    <p>Block 200+ tracking networks. Your browsing stays yours.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Working On It -->
+        <div class="features-section">
+            <div class="section-header">
+                <h2>Workin' on It</h2>
+                <span class="status-badge status-building">IN PROGRESS</span>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card coming-soon">
+                    <h3>🎯 Focus Mode</h3>
+                    <p>Pomodoro timer + site blocking. Get stuff done without distractions.</p>
+                </div>
+
+                <div class="feature-card coming-soon">
+                    <h3>🧘 Zen Mode</h3>
+                    <p>Ultimate minimalism. Just content floating in perfect emptiness.</p>
+                </div>
+
+                <div class="feature-card coming-soon">
+                    <h3>💙 Blue Light Filter</h3>
+                    <p>Dynamic adjustment based on sunset. Your eyes will thank you.</p>
+                </div>
+
+                <div class="feature-card coming-soon">
+                    <h3>⌨️ Command Palette</h3>
+                    <p>Cmd+K to access any feature instantly. Power user paradise.</p>
+                </div>
+
+                <div class="feature-card coming-soon">
+                    <h3>💬 P2P Comments</h3>
+                    <p>Leave notes for other SuperSeymour users. Build community anywhere.</p>
+                </div>
+
+                <div class="feature-card coming-soon">
+                    <h3>⏰ Time Machine</h3>
+                    <p>See any website from 5-10 years ago. The internet never forgets.</p>
+                </div>
+
+                <div class="feature-card coming-soon">
+                    <h3>🤖 AI Summary</h3>
+                    <p>Local AI that runs in your browser. No data leaves your device.</p>
+                </div>
+
+                <div class="feature-card coming-soon">
+                    <h3>🎓 Scholar Mode</h3>
+                    <p>Instant citations, footnotes, and research tools for any article.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>
+                <strong>100% Free. Forever.</strong><br>
+                No premium tiers. No tracking. No bullshit.<br>
+                <br>
+                A gift to the internet from <a href="https://founderstowne.com">Founderstowne Academy</a><br>
+                <small>© 2025 SuperSeymour | MIT License | <a href="https://github.com/founderstowne/superseymour">GitHub</a></small>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Check browser storage
+        async function checkStorage() {
+            const storageInfo = document.getElementById('storageInfo');
+            const storageBar = document.getElementById('storageBar');
+            const storageUsed = document.getElementById('storageUsed');
+            const installOptions = document.getElementById('installOptions');
+
+            if ('storage' in navigator && 'estimate' in navigator.storage) {
+                try {
+                    const {usage, quota} = await navigator.storage.estimate();
+                    const usedGB = (usage / 1073741824).toFixed(2);
+                    const totalGB = (quota / 1073741824).toFixed(0);
+                    const availableGB = ((quota - usage) / 1073741824).toFixed(1);
+                    const percentUsed = Math.round(usage / quota * 100);
+
+                    storageInfo.innerHTML = `
+                        <strong>Storage Available:</strong> ${availableGB} GB free<br>
+                        <small>Using ${usedGB} GB of ${totalGB} GB total (${percentUsed}% used)</small>
+                    `;
+
+                    storageBar.style.display = 'block';
+                    storageUsed.style.width = percentUsed + '%';
+                    storageUsed.textContent = percentUsed + '% used';
+
+                    installOptions.style.display = 'grid';
+
+                    // Show warning if low on space
+                    if (availableGB < 0.1) {
+                        storageInfo.innerHTML += '<br><span style="color: var(--warning);">⚠️ Low storage space</span>';
+                    }
+                } catch (e) {
+                    storageInfo.innerHTML = 'Storage check not available in your browser';
+                }
+            } else {
+                storageInfo.innerHTML = 'Your browser has sufficient storage for SuperSeymour';
+                installOptions.style.display = 'grid';
+            }
+        }
+
+        // Installation functions
+        function installMinimal() {
+            alert('Minimal installation (5MB) will begin when you drag the bookmarklet to your bookmarks bar and click it!');
+        }
+
+        function installStandard() {
+            alert('Standard installation (12MB) will be available soon!');
+        }
+
+        function installComplete() {
+            alert('Complete installation (20MB) will be available soon!');
+        }
+
+        // Check storage on load
+        checkStorage();
+
+        // Refresh storage every 5 seconds
+        setInterval(checkStorage, 5000);
+    </script>
+</body>
+</html>

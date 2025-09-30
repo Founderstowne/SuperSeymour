@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SuperSeymour - Local Bookmarklet (No Server Required)</title>
+    <style>
+        body {
+            font-family: -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .bookmarklet {
+            display: inline-block;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #0066cc, #0099ff);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 30px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: move;
+        }
+        .bookmarklet:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,102,204,0.4);
+        }
+        .info {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #0066cc;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .feature {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ SuperSeymour - 100% Local Version</h1>
+        <p style="color: #666; font-size: 1.1rem;">Transform any website with one click. No server, no tracking, just pure magic.</p>
+
+        <div class="success">
+            <strong>✅ This version works completely offline!</strong><br>
+            All code is embedded in the bookmarklet. No external server required.
+        </div>
+
+        <center>
+            <a href="javascript:void(0)" id="bookmarklet" class="bookmarklet">
+                ⚡ SuperSeymour
+            </a>
+            <p style="color: #666;">↑ Drag this button to your bookmarks bar</p>
+        </center>
+
+        <div class="info">
+            <h3>📚 How to Install</h3>
+            <ol>
+                <li><strong>Show your bookmarks bar:</strong> Press <code>Cmd+Shift+B</code> (Mac) or <code>Ctrl+Shift+B</code> (PC)</li>
+                <li><strong>Drag the blue button</strong> above to your bookmarks bar</li>
+                <li><strong>Click the bookmark</strong> on any website to activate SuperSeymour</li>
+            </ol>
+        </div>
+
+        <h3>✨ Features</h3>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎨</div>
+                <strong>Beautiful Orb UI</strong><br>
+                Animated control orb with radial menu
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📖</div>
+                <strong>Reader Mode</strong><br>
+                Clean, distraction-free reading
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🌙</div>
+                <strong>Dark Mode</strong><br>
+                True dark mode for any site
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <strong>Speed Mode</strong><br>
+                Remove ads and trackers
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🧘</div>
+                <strong>Zen Mode</strong><br>
+                Ultimate minimalist view
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <strong>100% Private</strong><br>
+                Runs entirely in your browser
+            </div>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Note:</strong> The bookmarklet contains the full SuperSeymour code (about 30KB).
+            It will load instantly on every page without needing any server connection.
+        </div>
+
+        <h3>🎯 How It Works</h3>
+        <ol>
+            <li>Click the bookmarklet on any page</li>
+            <li>A glowing orb appears in the corner (draggable!)</li>
+            <li>Click the orb to see the radial menu</li>
+            <li>Select any transformation</li>
+            <li>Click again to toggle off</li>
+        </ol>
+
+        <div class="info">
+            <strong>💡 Pro Tip:</strong> You can drag the orb to any corner of the screen.
+            The menu will automatically adjust its position!
+        </div>
+    </div>
+
+    <script>
+        // Load the activation-poc.js code and create the bookmarklet
+        fetch('activation-poc.js')
+            .then(response => response.text())
+            .then(code => {
+                // Create the bookmarklet URL
+                const bookmarkletCode = 'javascript:' + encodeURIComponent(code);
+                document.getElementById('bookmarklet').href = bookmarkletCode;
+
+                console.log('✅ Bookmarklet ready! Size:', Math.round(bookmarkletCode.length / 1024), 'KB');
+            })
+            .catch(err => {
+                console.error('Failed to load activation code:', err);
+
+                // Fallback to embedded minimal version
+                const fallbackCode = `javascript:(function(){
+                    if(window.SuperSeymour && window.SuperSeymour.active){
+                        window.SuperSeymour.toggle();
+                        return;
+                    }
+
+                    alert('SuperSeymour: Please open bookmarklet-local.html directly from your file system to generate the full bookmarklet.');
+                })();`;
+
+                document.getElementById('bookmarklet').href = fallbackCode;
+            });
+    </script>
+</body>
+</html>

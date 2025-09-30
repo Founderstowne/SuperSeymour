@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Bookmarklet - SuperSeymour</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .bookmarklet-container {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .bookmarklet {
+            display: inline-block;
+            padding: 20px 50px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            cursor: move;
+            box-shadow: 0 10px 30px rgba(238,90,36,0.3);
+        }
+
+        .bookmarklet:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(238,90,36,0.4);
+        }
+
+        .info {
+            background: #d1ecf1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #17a2b8;
+        }
+
+        code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnostic Bookmarklet</h1>
+
+        <div class="info">
+            <strong>Problem:</strong> IndexedDB is domain-specific. The code stored on one domain (file://) might not be accessible from another domain (inquirer.com).<br><br>
+            <strong>Solution:</strong> Let's test with a diagnostic bookmarklet that shows exactly what's happening.
+        </div>
+
+        <div class="bookmarklet-container">
+            <a href="javascript:(function(){
+                var output = 'SuperSeymour Diagnostic:\n\n';
+                output += 'Current domain: ' + window.location.hostname + '\n';
+                output += 'Protocol: ' + window.location.protocol + '\n\n';
+
+                try {
+                    var req = indexedDB.open('SuperSeymourDB', 1);
+
+                    req.onsuccess = function() {
+                        output += '✅ IndexedDB opened\n';
+                        var db = req.result;
+                        output += 'Object stores: ' + Array.from(db.objectStoreNames).join(', ') + '\n\n';
+
+                        try {
+                            var tx = db.transaction(['code'], 'readonly');
+                            var store = tx.objectStore('code');
+                            var get = store.get('activation');
+
+                            get.onsuccess = function() {
+                                if (get.result) {
+                                    output += '✅ Code found! Length: ' + get.result.length + ' chars\n';
+                                    output += 'First 100 chars: ' + get.result.substring(0, 100) + '...\n\n';
+
+                                    if (confirm(output + '\nCode is available! Run SuperSeymour now?')) {
+                                        try {
+                                            eval(get.result);
+                                        } catch(e) {
+                                            alert('Execution error: ' + e.message);
+                                        }
+                                    }
+                                } else {
+                                    output += '❌ No code found in activation key\n';
+                                    alert(output);
+                                }
+                            };
+
+                            get.onerror = function() {
+                                output += '❌ Error reading from store\n';
+                                alert(output);
+                            };
+                        } catch(e) {
+                            output += '❌ Transaction error: ' + e.message + '\n';
+                            alert(output);
+                        }
+                    };
+
+                    req.onerror = function() {
+                        output += '❌ Failed to open IndexedDB\n';
+                        output += 'Error: ' + req.error + '\n';
+                        alert(output);
+                    };
+
+                    req.onupgradeneeded = function(e) {
+                        output += '⚠️ Database needs upgrade\n';
+                        var db = e.target.result;
+                        if (!db.objectStoreNames.contains('code')) {
+                            db.createObjectStore('code');
+                            output += 'Created code store\n';
+                        }
+                    };
+
+                } catch(e) {
+                    output += '❌ Exception: ' + e.message + '\n';
+                    alert(output);
+                }
+            })()" class="bookmarklet">
+                🔍 Diagnostic Bookmarklet
+            </a>
+            <div style="margin-top: 15px; color: #666;">
+                ↑ Drag this to bookmarks and try on different sites
+            </div>
+        </div>
+
+        <h2>What This Will Show:</h2>
+        <ul>
+            <li>Current domain and protocol</li>
+            <li>Whether IndexedDB can be opened</li>
+            <li>What object stores exist</li>
+            <li>Whether the code is found</li>
+            <li>Option to run if found</li>
+        </ul>
+
+        <div class="info" style="background: #fff3cd; border-color: #ffc107;">
+            <strong>💡 The Issue:</strong><br>
+            IndexedDB is isolated per origin. This means:
+            <ul style="margin-top: 10px;">
+                <li><code>file://</code> URLs have their own IndexedDB</li>
+                <li><code>https://superseymour.com</code> has its own</li>
+                <li><code>https://inquirer.com</code> has its own</li>
+            </ul>
+
+            The code installed from one origin won't be available on another. This is a browser security feature.
+        </div>
+
+        <h2>🚀 The Real Solution:</h2>
+        <p>We need to either:</p>
+
+        <div class="bookmarklet-container" style="background: linear-gradient(135deg, #d4edda, #a8d5a8);">
+            <a href="javascript:(function(){
+                var s = document.createElement('script');
+                s.textContent = `PASTE_FULL_ACTIVATION_CODE_HERE`;
+                document.head.appendChild(s);
+            })()" class="bookmarklet" style="background: linear-gradient(135deg, #00c853, #00ff00);">
+                ⚡ Self-Contained SuperSeymour
+            </a>
+            <div style="margin-top: 15px; color: #666;">
+                ↑ This would have ALL the code embedded (82KB bookmarklet)
+            </div>
+        </div>
+
+        <p><strong>OR</strong></p>
+
+        <div class="bookmarklet-container">
+            <a href="javascript:(function(){
+                var s = document.createElement('script');
+                s.src = 'https://superseymour.com/activation.js';
+                document.head.appendChild(s);
+            })()" class="bookmarklet" style="background: linear-gradient(135deg, #0066cc, #0099ff);">
+                ⚡ SuperSeymour (CDN)
+            </a>
+            <div style="margin-top: 15px; color: #666;">
+                ↑ This would load from a CDN/server (requires hosting)
+            </div>
+        </div>
+    </div>
+</body>
+</html>
