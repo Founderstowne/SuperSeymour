@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperSeymour - GitHub Pages Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+
+        .setup-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .setup-box h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .hint {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .generate-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .bookmarklet-container {
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bookmarklet-link {
+            display: inline-block;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin: 30px 0;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .bookmarklet-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .instructions h4 {
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+        }
+
+        .url-preview {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌈 SuperSeymour</h1>
+        <p class="tagline">GitHub Pages Edition - Tiny & Powerful</p>
+
+        <div class="setup-box">
+            <h3><span class="step-number">1</span> Enter Your GitHub Username</h3>
+            <input type="text"
+                   id="username"
+                   placeholder="your-github-username"
+                   onkeyup="updatePreview()"
+                   onchange="updatePreview()">
+            <p class="hint">The username where you'll host superseymour repository</p>
+            <div id="url-preview" class="url-preview" style="display:none;"></div>
+        </div>
+
+        <button class="generate-btn" onclick="generateBookmarklet()">Generate My Bookmarklet</button>
+
+        <div id="bookmarklet-container" class="bookmarklet-container">
+            <p style="margin: 20px 0; font-size: 1.1em;">Drag this button to your bookmarks bar:</p>
+            <a id="bookmarklet" href="#" class="bookmarklet-link">🌈 SuperSeymour</a>
+
+            <div class="instructions">
+                <h4>📋 Complete Setup Instructions:</h4>
+                <ol>
+                    <li>Create a new GitHub repo called <strong>superseymour</strong></li>
+                    <li>Upload <strong>activation-poc.js</strong> to the repo</li>
+                    <li>Enable GitHub Pages in Settings → Pages</li>
+                    <li>Drag the button above to your bookmarks bar</li>
+                    <li>Click the bookmark on any website to activate!</li>
+                </ol>
+            </div>
+
+            <div id="success" class="success-message">
+                ✨ Bookmarklet generated! Your SuperSeymour is just ~200 bytes instead of 82KB!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updatePreview() {
+            const username = document.getElementById('username').value;
+            const preview = document.getElementById('url-preview');
+
+            if (username) {
+                preview.style.display = 'block';
+                preview.textContent = `https://${username}.github.io/superseymour/activation-poc.js`;
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        function generateBookmarklet() {
+            const username = document.getElementById('username').value.trim();
+
+            if (!username) {
+                alert('Please enter your GitHub username first!');
+                return;
+            }
+
+            // Generate the compact bookmarklet
+            const bookmarkletCode = `javascript:(function(){if(window.SuperSeymourActive)return;var s=document.createElement('script');s.src='https://${username}.github.io/superseymour/activation-poc.js?v='+Date.now();s.onload=()=>window.SuperSeymourActive=true;document.head.appendChild(s);})();`;
+
+            // Update the bookmarklet link
+            const bookmarkletLink = document.getElementById('bookmarklet');
+            bookmarkletLink.href = bookmarkletCode;
+
+            // Show the bookmarklet container
+            document.getElementById('bookmarklet-container').style.display = 'block';
+
+            // Show success message
+            setTimeout(() => {
+                document.getElementById('success').style.display = 'block';
+            }, 500);
+
+            // Smooth scroll to bookmarklet
+            bookmarkletLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Allow Enter key to generate
+        document.getElementById('username').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateBookmarklet();
+            }
+        });
+    </script>
+</body>
+</html>

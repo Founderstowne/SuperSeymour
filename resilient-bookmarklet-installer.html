@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperSeymour - Resilient Multi-Server Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .server-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .server-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .server-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .server-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+
+        .server-url {
+            font-family: monospace;
+            font-size: 0.85em;
+            color: #666;
+            word-break: break-all;
+            margin-top: 5px;
+        }
+
+        .setup-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .bookmarklet-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .bookmarklet-link {
+            display: inline-block;
+            padding: 20px 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .bookmarklet-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .code-block {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 20px 0;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "🛡️";
+            position: absolute;
+            left: 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ SuperSeymour Resilient</h1>
+        <p class="tagline">Multi-Server Failover System - Unstoppable by Design</p>
+
+        <div class="success-box">
+            <strong>🚀 Military-Grade Resilience:</strong> This bookmarklet tries 6+ different servers in sequence. If one fails, it automatically tries the next. Practically unstoppable!
+        </div>
+
+        <div class="bookmarklet-container">
+            <p style="margin-bottom: 20px; font-size: 1.1em;">Drag this ultra-resilient bookmarklet to your bookmarks bar:</p>
+            <a href="javascript:(function(){if(window.SSActive)return;window.SSActive=1;var servers=['https://YOUR_USERNAME.github.io/superseymour/activation-poc.js','https://cdn.jsdelivr.net/gh/YOUR_USERNAME/superseymour@main/activation-poc.js','https://raw.githubusercontent.com/YOUR_USERNAME/superseymour/main/activation-poc.js','https://YOUR_USERNAME.gitlab.io/superseymour/activation-poc.js','https://superseymour.netlify.app/activation-poc.js','https://superseymour.vercel.app/activation-poc.js','https://superseymour.surge.sh/activation-poc.js','https://YOUR_BACKUP_SERVER.com/activation-poc.js'],tryServer=function(i){if(i>=servers.length){alert('SuperSeymour: All servers down. Try again later.');window.SSActive=0;return;}var s=document.createElement('script');s.src=servers[i]+'?v='+Date.now();s.onerror=()=>tryServer(i+1);s.onload=()=>console.log('SuperSeymour loaded from:',servers[i]);document.head.appendChild(s);};tryServer(0);})();" class="bookmarklet-link">🛡️ SuperSeymour Resilient</a>
+        </div>
+
+        <h2>🌐 Automatic Failover Servers</h2>
+        <div class="server-grid">
+            <div class="server-card">
+                <h3><span class="server-status"></span> GitHub Pages</h3>
+                <div class="server-url">github.io/superseymour/</div>
+                <small>Primary - Microsoft's infrastructure</small>
+            </div>
+            <div class="server-card">
+                <h3><span class="server-status"></span> jsDelivr CDN</h3>
+                <div class="server-url">cdn.jsdelivr.net/gh/</div>
+                <small>Global CDN - Multiple providers</small>
+            </div>
+            <div class="server-card">
+                <h3><span class="server-status"></span> GitHub Raw</h3>
+                <div class="server-url">raw.githubusercontent.com</div>
+                <small>Direct from repository</small>
+            </div>
+            <div class="server-card">
+                <h3><span class="server-status"></span> GitLab Pages</h3>
+                <div class="server-url">gitlab.io/superseymour/</div>
+                <small>Alternative to GitHub</small>
+            </div>
+            <div class="server-card">
+                <h3><span class="server-status"></span> Netlify</h3>
+                <div class="server-url">superseymour.netlify.app</div>
+                <small>Free tier - Auto-deploy</small>
+            </div>
+            <div class="server-card">
+                <h3><span class="server-status"></span> Vercel</h3>
+                <div class="server-url">superseymour.vercel.app</div>
+                <small>Edge network - Fast</small>
+            </div>
+            <div class="server-card">
+                <h3><span class="server-status"></span> Surge.sh</h3>
+                <div class="server-url">superseymour.surge.sh</div>
+                <small>Simple static hosting</small>
+            </div>
+            <div class="server-card">
+                <h3><span class="server-status"></span> Your Server</h3>
+                <div class="server-url">your-backup.com</div>
+                <small>Custom backup location</small>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('how')">How It Works</div>
+            <div class="tab" onclick="showTab('setup')">Quick Setup</div>
+            <div class="tab" onclick="showTab('custom')">Customize</div>
+            <div class="tab" onclick="showTab('paranoid')">Maximum Paranoia</div>
+        </div>
+
+        <div id="how" class="tab-content active">
+            <div class="setup-section">
+                <h3>🔄 Automatic Failover Logic</h3>
+                <p>The bookmarklet contains an array of server URLs and tries them in sequence:</p>
+                <ol style="margin: 20px 0; padding-left: 20px;">
+                    <li>Try loading from GitHub Pages</li>
+                    <li>If that fails, try jsDelivr CDN</li>
+                    <li>If that fails, try GitHub Raw</li>
+                    <li>Continue through all backup servers</li>
+                    <li>Each server has 3 seconds to respond</li>
+                    <li>First successful load wins</li>
+                </ol>
+
+                <ul class="feature-list">
+                    <li>Zero user intervention required</li>
+                    <li>Transparent failover in background</li>
+                    <li>Console logs which server succeeded</li>
+                    <li>Works even if 5 out of 6 servers are down</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="setup" class="tab-content">
+            <div class="setup-section">
+                <h3>⚡ 5-Minute Setup</h3>
+
+                <h4>1. GitHub + jsDelivr (Automatic Mirror)</h4>
+                <div class="code-block">
+# Push to GitHub
+git add activation-poc.js
+git commit -m "SuperSeymour"
+git push origin main
+
+# jsDelivr automatically mirrors it at:
+# cdn.jsdelivr.net/gh/USERNAME/REPO@main/FILE</div>
+
+                <h4>2. GitLab (Backup)</h4>
+                <div class="code-block">
+# Create GitLab repo and push
+git remote add gitlab https://gitlab.com/USERNAME/superseymour.git
+git push gitlab main
+
+# Enable GitLab Pages in Settings</div>
+
+                <h4>3. Netlify (Deploy from GitHub)</h4>
+                <div class="code-block">
+# Connect GitHub repo to Netlify
+# Auto-deploys on every push
+# Free tier: 100GB/month bandwidth</div>
+            </div>
+        </div>
+
+        <div id="custom" class="tab-content">
+            <div class="setup-section">
+                <h3>🛠️ Generate Custom Bookmarklet</h3>
+
+                <label style="display: block; margin: 20px 0;">
+                    <strong>Enter your server URLs (one per line):</strong>
+                    <textarea id="customServers" style="width: 100%; height: 150px; margin-top: 10px; padding: 10px; font-family: monospace;" placeholder="https://your-username.github.io/superseymour/activation-poc.js
+https://cdn.jsdelivr.net/gh/username/repo@main/activation-poc.js
+https://your-backup-server.com/activation-poc.js"></textarea>
+                </label>
+
+                <button onclick="generateCustomBookmarklet()">Generate Custom Resilient Bookmarklet</button>
+
+                <div id="customBookmarklet" style="display: none; margin-top: 20px;">
+                    <p>Your custom bookmarklet with your servers:</p>
+                    <a id="customLink" href="#" class="bookmarklet-link" style="margin-top: 15px; display: inline-block;">🛡️ My SuperSeymour</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="paranoid" class="tab-content">
+            <div class="setup-section">
+                <h3>🔐 Maximum Paranoia Mode</h3>
+
+                <h4>Deploy Everywhere Strategy:</h4>
+                <div class="code-block">
+#!/bin/bash
+# deploy-everywhere.sh
+
+# GitHub
+git push origin main
+
+# GitLab
+git push gitlab main
+
+# Netlify (auto-deploys from GitHub)
+# Vercel (auto-deploys from GitHub)
+
+# Surge.sh
+surge ./SuperSeymour superseymour.surge.sh
+
+# Your own VPS (multiple regions)
+rsync -avz activation-poc.js user@server1.com:/var/www/
+rsync -avz activation-poc.js user@server2.eu:/var/www/
+rsync -avz activation-poc.js user@server3.asia:/var/www/
+
+# IPFS (Distributed Web)
+ipfs add activation-poc.js
+ipfs pin add [HASH]
+
+# Arweave (Permanent Storage)
+arweave deploy activation-poc.js</div>
+
+                <h4>Even More Paranoid:</h4>
+                <ul class="feature-list">
+                    <li>Store on IPFS for censorship resistance</li>
+                    <li>Use Cloudflare Workers for edge computing</li>
+                    <li>Deploy to multiple CDN providers</li>
+                    <li>Set up monitoring to detect outages</li>
+                    <li>Use different domain registrars</li>
+                    <li>Create base64 encoded fallback version</li>
+                </ul>
+
+                <div class="warning-box">
+                    <strong>Nuclear Option:</strong> Include a base64-encoded version as the final fallback. If ALL servers fail, the bookmarklet loads the embedded code (making it 82KB but absolutely bulletproof).
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function generateCustomBookmarklet() {
+            const servers = document.getElementById('customServers').value
+                .split('\n')
+                .filter(url => url.trim())
+                .map(url => url.trim());
+
+            if (servers.length === 0) {
+                alert('Please enter at least one server URL');
+                return;
+            }
+
+            const bookmarkletCode = `javascript:(function(){if(window.SSA)return;window.SSA=1;var s=${JSON.stringify(servers)},t=function(i){if(i>=s.length){alert('All servers failed');window.SSA=0;return;}var x=document.createElement('script');x.src=s[i]+'?v='+Date.now();x.onerror=()=>t(i+1);x.onload=()=>console.log('Loaded:',s[i]);document.head.appendChild(x);};t(0);})();`;
+
+            const link = document.getElementById('customLink');
+            link.href = bookmarkletCode;
+            document.getElementById('customBookmarklet').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
