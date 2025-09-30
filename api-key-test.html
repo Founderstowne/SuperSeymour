@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperSeymour API Key Manager - Browser Password Integration</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .secondary-btn {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .success-btn {
+            background: #00c853;
+            color: white;
+        }
+
+        .danger-btn {
+            background: #ff5252;
+            color: white;
+        }
+
+        .output {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            color: #155724;
+        }
+
+        .test-area {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .test-area h3 {
+            margin-top: 0;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-active {
+            background: #00c853;
+            animation: pulse 2s infinite;
+        }
+
+        .status-inactive {
+            background: #ff5252;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 200, 83, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 SuperSeymour API Key Manager</h1>
+        <p class="subtitle">Using your browser's password manager to securely store API keys!</p>
+
+        <div class="info-box">
+            <strong>How it works:</strong> API keys are treated as passwords. Your browser's built-in password manager
+            securely stores them, syncs across devices, and auto-fills them when needed. No plaintext storage!
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature">
+                <h3>✅ Secure</h3>
+                <p>Uses browser's encrypted password storage</p>
+            </div>
+            <div class="feature">
+                <h3>🔄 Syncs</h3>
+                <p>Works across all your devices with browser sync</p>
+            </div>
+            <div class="feature">
+                <h3>🔒 Private</h3>
+                <p>Keys never leave your browser</p>
+            </div>
+            <div class="feature">
+                <h3>⚡ Auto-fill</h3>
+                <p>Browser remembers and fills keys automatically</p>
+            </div>
+        </div>
+
+        <h2>Test the System</h2>
+
+        <div class="button-group">
+            <button class="primary-btn" onclick="configureKeys()">
+                🔑 Configure API Keys
+            </button>
+            <button class="secondary-btn" onclick="checkStatus()">
+                📊 Check Status
+            </button>
+            <button class="secondary-btn" onclick="testAutofill()">
+                🔄 Test Autofill
+            </button>
+            <button class="danger-btn" onclick="clearConfig()">
+                🗑️ Clear Config
+            </button>
+        </div>
+
+        <div class="output" id="output">Console output will appear here...</div>
+
+        <div class="test-area">
+            <h3>Test API Calls</h3>
+
+            <input type="text"
+                   id="test-prompt"
+                   placeholder="Enter a test prompt (e.g., 'Hello, how are you?')"
+                   value="Say 'Hello from SuperSeymour!' if you can read this.">
+
+            <div class="button-group">
+                <button class="success-btn" onclick="testOpenAI()">
+                    Test OpenAI API
+                </button>
+                <button class="success-btn" onclick="testClaude()">
+                    Test Claude API
+                </button>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <strong>⚠️ Important:</strong>
+            <ul>
+                <li>When you save API keys, your browser will prompt to save them as passwords</li>
+                <li>Say "Yes" to save them securely</li>
+                <li>Next time you visit, they'll auto-fill!</li>
+                <li>Keys are stored in your browser's password manager, not in localStorage</li>
+            </ul>
+        </div>
+
+        <div class="success-box" id="success-box" style="display: none;">
+            <strong>✅ Success!</strong>
+            <p id="success-message"></p>
+        </div>
+    </div>
+
+    <!-- Load the API manager -->
+    <script src="api-key-manager.js"></script>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : '📝';
+            output.textContent += `${timestamp} ${prefix} ${message}\n`;
+            output.scrollTop = output.scrollHeight;
+            console.log(message);
+        }
+
+        async function configureKeys() {
+            log('Opening API key configuration...');
+            try {
+                const keys = await SuperSeymourAPI.init();
+                if (keys && (keys.openai || keys.anthropic)) {
+                    log('API keys configured successfully!', 'success');
+                    showSuccess('API keys are now saved in your browser\'s password manager!');
+                } else {
+                    log('Configuration cancelled or skipped');
+                }
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkStatus() {
+            log('Checking API key status...');
+
+            const hasConfig = SuperSeymourAPI.hasKeys();
+            log(`Configuration exists: ${hasConfig ? 'Yes' : 'No'}`);
+
+            if (hasConfig) {
+                const config = JSON.parse(localStorage.getItem('ss_api_config'));
+                log(`Has OpenAI key: ${config.hasOpenAI ? 'Yes' : 'No'}`);
+                log(`Has Anthropic key: ${config.hasAnthropic ? 'Yes' : 'No'}`);
+                log(`Has Google key: ${config.hasGoogle ? 'Yes' : 'No'}`);
+                log(`Configured: ${new Date(config.timestamp).toLocaleString()}`);
+            }
+
+            // Try to check if keys are in memory
+            if (SuperSeymourAPI.initialized) {
+                log('Keys are loaded in memory', 'success');
+            } else {
+                log('Keys not loaded. Try autofill test or reconfigure.');
+            }
+        }
+
+        async function testAutofill() {
+            log('Testing browser autofill...');
+            const keys = await SuperSeymourAPI.checkForAutofill();
+
+            if (keys) {
+                log('Autofill successful! Keys retrieved from password manager.', 'success');
+                log(`OpenAI key: ${keys.openai ? 'sk-...' + keys.openai.slice(-4) : 'Not found'}`);
+                log(`Anthropic key: ${keys.anthropic ? 'sk-...' + keys.anthropic.slice(-4) : 'Not found'}`);
+                showSuccess('Browser successfully auto-filled your API keys!');
+            } else {
+                log('No autofill detected. Keys may not be saved yet.');
+            }
+        }
+
+        async function testOpenAI() {
+            const prompt = document.getElementById('test-prompt').value;
+            if (!prompt) {
+                log('Please enter a test prompt', 'error');
+                return;
+            }
+
+            log('Testing OpenAI API...');
+
+            try {
+                // Make sure keys are loaded
+                if (!SuperSeymourAPI.initialized) {
+                    await SuperSeymourAPI.init();
+                }
+
+                const response = await SuperSeymourAPI.callOpenAI(prompt, {
+                    model: 'gpt-3.5-turbo',
+                    max_tokens: 100
+                });
+
+                if (response.choices && response.choices[0]) {
+                    log('OpenAI Response: ' + response.choices[0].message.content, 'success');
+                    showSuccess('OpenAI API call successful!');
+                } else if (response.error) {
+                    log('OpenAI Error: ' + response.error.message, 'error');
+                } else {
+                    log('Unexpected response: ' + JSON.stringify(response), 'error');
+                }
+            } catch (error) {
+                log(`Error calling OpenAI: ${error.message}`, 'error');
+            }
+        }
+
+        async function testClaude() {
+            const prompt = document.getElementById('test-prompt').value;
+            if (!prompt) {
+                log('Please enter a test prompt', 'error');
+                return;
+            }
+
+            log('Testing Claude API...');
+
+            try {
+                // Make sure keys are loaded
+                if (!SuperSeymourAPI.initialized) {
+                    await SuperSeymourAPI.init();
+                }
+
+                const response = await SuperSeymourAPI.callClaude(prompt, {
+                    max_tokens: 100
+                });
+
+                if (response.content && response.content[0]) {
+                    log('Claude Response: ' + response.content[0].text, 'success');
+                    showSuccess('Claude API call successful!');
+                } else if (response.error) {
+                    log('Claude Error: ' + response.error.message, 'error');
+                } else {
+                    log('Unexpected response: ' + JSON.stringify(response), 'error');
+                }
+            } catch (error) {
+                log(`Error calling Claude: ${error.message}`, 'error');
+            }
+        }
+
+        function clearConfig() {
+            if (confirm('This will clear the configuration but NOT the passwords saved in your browser. Continue?')) {
+                SuperSeymourAPI.clearConfig();
+                log('Configuration cleared. Browser may still remember passwords.', 'success');
+                showSuccess('Configuration cleared! Your browser may still remember the passwords.');
+            }
+        }
+
+        function showSuccess(message) {
+            const box = document.getElementById('success-box');
+            const msg = document.getElementById('success-message');
+            msg.textContent = message;
+            box.style.display = 'block';
+            setTimeout(() => {
+                box.style.display = 'none';
+            }, 5000);
+        }
+
+        // Initial status check
+        window.addEventListener('load', () => {
+            log('SuperSeymour API Key Manager loaded');
+            checkStatus();
+        });
+    </script>
+</body>
+</html>
