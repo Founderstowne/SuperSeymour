@@ -209,8 +209,8 @@
         <div class="bookmarklet-container">
             <p style="margin-bottom: 20px; font-size: 1.1em;">Drag this to your bookmarks bar:</p>
 
-            <!-- CDN First (GitHub Pages not enabled yet) -->
-            <a href="javascript:(function(){if(window.SSActive)return;window.SSActive=1;var servers=['https://cdn.jsdelivr.net/gh/Founderstowne/SuperSeymour@main/activation-poc.js','https://raw.githubusercontent.com/Founderstowne/SuperSeymour/main/activation-poc.js','https://founderstowne.github.io/SuperSeymour/activation-poc.js'],tryServer=function(i){if(i>=servers.length){alert('SuperSeymour: Unable to load. Please try again later.');window.SSActive=0;return;}var s=document.createElement('script');s.src=servers[i]+'?v2='+Date.now();s.onerror=()=>tryServer(i+1);s.onload=()=>console.log('SuperSeymour v2.0.0 loaded from:',servers[i]);document.head.appendChild(s);};tryServer(0);})();"
+            <!-- Cloudflare Pages Primary (Fastest!) -->
+            <a href="javascript:(function(){if(window.SSActive)return;window.SSActive=1;var servers=['https://superseymour.pages.dev/activation-poc.js','https://cdn.jsdelivr.net/gh/Founderstowne/SuperSeymour@main/activation-poc.js','https://raw.githubusercontent.com/Founderstowne/SuperSeymour/main/activation-poc.js','https://founderstowne.github.io/SuperSeymour/activation-poc.js'],tryServer=function(i){if(i>=servers.length){alert('SuperSeymour: Unable to load. Please try again later.');window.SSActive=0;return;}var s=document.createElement('script');s.src=servers[i]+'?v2='+Date.now();s.onerror=()=>tryServer(i+1);s.onload=()=>console.log('SuperSeymour v2.0.0 loaded from:',servers[i]);document.head.appendChild(s);};tryServer(0);})();"
                class="bookmarklet-link">🌈 SuperSeymour</a>
         </div>
 
@@ -219,9 +219,9 @@
             <div class="status-item">
                 <span class="status-label"><span class="status-indicator"></span>Primary Server</span>
                 <span class="status-value">
-                    <a href="https://founderstowne.github.io/SuperSeymour/activation-poc.js"
+                    <a href="https://superseymour.pages.dev/activation-poc.js"
                        target="_blank"
-                       class="github-link">GitHub Pages</a>
+                       class="github-link">Cloudflare Pages</a>
                 </span>
             </div>
             <div class="status-item">
@@ -233,11 +233,19 @@
                 </span>
             </div>
             <div class="status-item">
-                <span class="status-label"><span class="status-indicator"></span>Backup</span>
+                <span class="status-label"><span class="status-indicator"></span>Backup 1</span>
                 <span class="status-value">
                     <a href="https://raw.githubusercontent.com/Founderstowne/SuperSeymour/main/activation-poc.js"
                        target="_blank"
                        class="github-link">GitHub Raw</a>
+                </span>
+            </div>
+            <div class="status-item">
+                <span class="status-label"><span class="status-indicator"></span>Backup 2</span>
+                <span class="status-value">
+                    <a href="https://founderstowne.github.io/SuperSeymour/activation-poc.js"
+                       target="_blank"
+                       class="github-link">GitHub Pages</a> (when enabled)
                 </span>
             </div>
         </div>
