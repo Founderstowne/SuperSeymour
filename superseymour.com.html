@@ -317,64 +317,27 @@
 
                     <div class="bookmarklet-container">
                         <a href="javascript:(function(){
-                            /* SuperSeymour Loader - Checks IndexedDB first, then loads from cache or installs */
-                            const SS_VERSION = '2025.09.30.1030';
-                            const SS_DB = 'SuperSeymourDB';
-                            const SS_STORE = 'code';
-
-                            async function loadSuperSeymour() {
-                                try {
-                                    /* Check IndexedDB for cached code */
-                                    const db = await new Promise((resolve, reject) => {
-                                        const request = indexedDB.open(SS_DB, 1);
-                                        request.onerror = () => reject(request.error);
-                                        request.onsuccess = () => resolve(request.result);
-                                        request.onupgradeneeded = (e) => {
-                                            const db = e.target.result;
-                                            if (!db.objectStoreNames.contains(SS_STORE)) {
-                                                db.createObjectStore(SS_STORE);
-                                            }
-                                        };
-                                    });
-
-                                    const tx = db.transaction([SS_STORE], 'readonly');
-                                    const store = tx.objectStore(SS_STORE);
-                                    const code = await new Promise((resolve) => {
-                                        const request = store.get('activation');
-                                        request.onsuccess = () => resolve(request.result);
-                                    });
-
-                                    db.close();
-
-                                    if (code) {
-                                        /* Run from cache */
-                                        console.log('✅ SuperSeymour loading from IndexedDB cache');
-                                        eval(code);
-                                    } else {
-                                        /* Not installed - prompt to visit installation page */
-                                        if (window.location.hostname === 'localhost' ||
-                                            window.location.pathname.includes('superseymour')) {
-                                            /* We're on the installation page - don't redirect */
-                                            alert('Click the "Install SuperSeymour" button to complete installation!');
-                                        } else {
-                                            /* Redirect to installation */
-                                            const install = confirm(
-                                                'SuperSeymour needs to be installed first!\n\n' +
-                                                'Click OK to visit the installation page.\n\n' +
-                                                '(This is a one-time setup that takes 5 seconds)'
-                                            );
-                                            if (install) {
-                                                window.open('https://superseymour.com', '_blank');
-                                            }
-                                        }
-                                    }
-                                } catch (error) {
-                                    console.error('SuperSeymour error:', error);
-                                    alert('Error loading SuperSeymour. Please try again.');
+                            /* SuperSeymour v2.0 - Multi-server resilient loader with toggle functionality */
+                            if(window.SSActive)return;
+                            window.SSActive=1;
+                            var servers=[
+                                'https://superseymour.pages.dev/activation-poc.js',
+                                'https://cdn.jsdelivr.net/gh/Founderstowne/SuperSeymour@main/activation-poc.js',
+                                'https://raw.githubusercontent.com/Founderstowne/SuperSeymour/main/activation-poc.js'
+                            ],
+                            tryServer=function(i){
+                                if(i>=servers.length){
+                                    alert('SuperSeymour: Unable to load. Please try again later.');
+                                    window.SSActive=0;
+                                    return;
                                 }
-                            }
-
-                            loadSuperSeymour();
+                                var s=document.createElement('script');
+                                s.src=servers[i]+'?v2='+Date.now();
+                                s.onerror=()=>tryServer(i+1);
+                                s.onload=()=>console.log('SuperSeymour v2.0.0 loaded from:',servers[i]);
+                                document.head.appendChild(s);
+                            };
+                            tryServer(0);
                         })();" class="bookmarklet">
                             ⚡ SuperSeymour
                         </a>
