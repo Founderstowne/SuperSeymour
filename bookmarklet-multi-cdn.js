@@ -12,7 +12,7 @@ javascript:(function(){
     // Define CDN sources in priority order
     const sources = [
         // Primary: jsDelivr with specific commit (bypasses cache)
-        'https://cdn.jsdelivr.net/gh/Founderstowne/SuperSeymour@ab1fe03/activation-poc.js',
+        'https://cdn.jsdelivr.net/gh/Founderstowne/SuperSeymour@8e07c09/activation-poc.js',
 
         // Production server
         'https://superseymour.com/activation-poc.js',
