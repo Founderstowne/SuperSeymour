@@ -908,6 +908,14 @@
 
     // Apply dark mode
     function applyDarkMode() {
+        // Check if page has native dark mode support
+        if (document.documentElement.hasAttribute('data-superseymour-native-dark-mode')) {
+            // Page already has dark mode - just add a class to trigger it
+            document.documentElement.classList.add('ss-force-dark-mode');
+            // Don't invert - the page will handle it
+            return;
+        }
+
         // Store original filter
         if (!window.SuperSeymour.originalStyles.filter) {
             window.SuperSeymour.originalStyles.filter = document.documentElement.style.filter || '';
@@ -924,6 +932,12 @@
 
     // Revert dark mode
     function revertDarkMode() {
+        // Check if we used native dark mode
+        if (document.documentElement.classList.contains('ss-force-dark-mode')) {
+            document.documentElement.classList.remove('ss-force-dark-mode');
+            return;
+        }
+
         document.documentElement.style.filter = window.SuperSeymour.originalStyles.filter || '';
 
         // Revert media elements
